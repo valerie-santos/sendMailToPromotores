@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Valerie Santos · Propuesta</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #141414;
+      color: #f5f5f5;
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    .card {
+      background: #1a1a1a;
+      border: 1px solid #2e2e2e;
+      border-radius: 16px;
+      padding: 36px 32px;
+      width: 100%;
+      max-width: 440px;
+    }
+
+    .titulo {
+      color: #b48cff;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .subtitulo {
+      color: #888;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid #2e2e2e;
+      margin: 20px 0;
+    }
+
+    /* Selector de idioma */
+    .lang-selector {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .lang-btn {
+      flex: 1;
+      padding: 8px;
+      border: 1.5px solid #444;
+      border-radius: 8px;
+      background: #232323;
+      color: #888;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .lang-btn.active {
+      border-color: #b48cff;
+      background: #2a2040;
+      color: #b48cff;
+    }
+
+    .lang-label {
+      font-size: 11px;
+      color: #999;
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .campo-grupo { margin-bottom: 14px; }
+
+    label {
+      display: block;
+      font-size: 11px;
+      color: #999;
+      margin-bottom: 6px;
+    }
+
+    input {
+      width: 100%;
+      background: #232323;
+      border: 1.5px solid #444;
+      border-radius: 8px;
+      color: #f5f5f5;
+      font-size: 14px;
+      padding: 10px 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    input:focus { border-color: #b48cff; }
+    input.error { border-color: #ff5050; }
+
+    .err-msg {
+      font-size: 10px;
+      color: #ff5050;
+      margin-top: 4px;
+      min-height: 14px;
+    }
+
+    button#btn {
+      width: 100%;
+      margin-top: 22px;
+      padding: 13px;
+      border: none;
+      border-radius: 10px;
+      background: #b48cff;
+      color: #141414;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    button#btn:disabled { cursor: not-allowed; opacity: 0.8; }
+    button#btn.enviando { background: #7a5ab4; color: #ddd; }
+    button#btn.enviado  { background: #64dc96; color: #141414; }
+    button#btn.error-btn { background: #ff5050; color: #fff; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="titulo">VALERIE SANTOS · PROPUESTA</div>
+    <div class="subtitulo">Hard Techno &amp; Schranz</div>
+    <hr />
+
+    <!-- Selector de idioma -->
+    <span class="lang-label" id="label-idioma">Idioma del email</span>
+    <div class="lang-selector">
+      <button class="lang-btn active" id="btn-es" onclick="setLang('es')">🇪🇸 Español</button>
+      <button class="lang-btn" id="btn-en" onclick="setLang('en')">🇬🇧 English</button>
+    </div>
+
+    <div class="campo-grupo">
+      <label id="label-nombre">Nombre del promotor *</label>
+      <input type="text" id="nombre" placeholder="Ej: Carlos" />
+      <div class="err-msg" id="err-nombre"></div>
+    </div>
+
+    <div class="campo-grupo">
+      <label id="label-email">Email del promotor *</label>
+      <input type="email" id="email" placeholder="Ej: carlos@sala.com" />
+      <div class="err-msg" id="err-email"></div>
+    </div>
+
+    <div class="campo-grupo">
+      <label id="label-evento">Evento / sala (opcional)</label>
+      <input type="text" id="evento" placeholder="Ej: Fabric Madrid, Awakenings..." />
+    </div>
+
+    <div class="campo-grupo">
+      <label id="label-fecha">Fecha o periodo (opcional)</label>
+      <input type="text" id="fecha" placeholder="Ej: junio 2026, verano..." />
+    </div>
+
+    <button id="btn" onclick="enviar()">ENVIAR PROPUESTA</button>
+  </div>
+
+  <script>
+    let lang = 'es';
+
+    const textos = {
+      es: {
+        labelIdioma:  'Idioma del email',
+        labelNombre:  'Nombre del promotor *',
+        labelEmail:   'Email del promotor *',
+        labelEvento:  'Evento / sala (opcional)',
+        labelFecha:   'Fecha o periodo (opcional)',
+        btnEnviar:    'ENVIAR PROPUESTA',
+        btnEnviando:  'ENVIANDO...',
+        btnEnviado:   '✅ ENVIADO',
+        errObligatorio: '⚠ Campo obligatorio',
+        errEmail:     '⚠ Email no válido',
+        errConexion:  '❌ Error de conexión',
+      },
+      en: {
+        labelIdioma:  'Email language',
+        labelNombre:  'Promoter name *',
+        labelEmail:   'Promoter email *',
+        labelEvento:  'Event / venue (optional)',
+        labelFecha:   'Date or period (optional)',
+        btnEnviar:    'SEND PROPOSAL',
+        btnEnviando:  'SENDING...',
+        btnEnviado:   '✅ SENT',
+        errObligatorio: '⚠ Required field',
+        errEmail:     '⚠ Invalid email',
+        errConexion:  '❌ Connection error',
+      }
+    };
+
+    function setLang(l) {
+      lang = l;
+      const t = textos[l];
+      document.getElementById('label-idioma').textContent = t.labelIdioma;
+      document.getElementById('label-nombre').textContent = t.labelNombre;
+      document.getElementById('label-email').textContent  = t.labelEmail;
+      document.getElementById('label-evento').textContent = t.labelEvento;
+      document.getElementById('label-fecha').textContent  = t.labelFecha;
+      document.getElementById('btn').textContent          = t.btnEnviar;
+      document.getElementById('btn-es').classList.toggle('active', l === 'es');
+      document.getElementById('btn-en').classList.toggle('active', l === 'en');
+    }
+
+    async function enviar() {
+      const t      = textos[lang];
+      const nombre = document.getElementById('nombre').value.trim();
+      const email  = document.getElementById('email').value.trim();
+      const evento = document.getElementById('evento').value.trim();
+      const fecha  = document.getElementById('fecha').value.trim();
+      const btn    = document.getElementById('btn');
+
+      // Reset errores
+      let valido = true;
+      ['nombre', 'email'].forEach(id => {
+        document.getElementById(id).classList.remove('error');
+        document.getElementById('err-' + id).textContent = '';
+      });
+
+      if (!nombre) {
+        document.getElementById('nombre').classList.add('error');
+        document.getElementById('err-nombre').textContent = t.errObligatorio;
+        valido = false;
+      }
+      if (!email) {
+        document.getElementById('email').classList.add('error');
+        document.getElementById('err-email').textContent = t.errObligatorio;
+        valido = false;
+      } else if (!email.includes('@')) {
+        document.getElementById('email').classList.add('error');
+        document.getElementById('err-email').textContent = t.errEmail;
+        valido = false;
+      }
+
+      if (!valido) return;
+
+      btn.disabled = true;
+      btn.className = 'enviando';
+      btn.textContent = t.btnEnviando;
+
+      try {
+        const res = await fetch('/api/enviar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nombre, email, evento, fecha, lang })
+        });
+
+        const data = await res.json();
+
+        if (res.ok) {
+          btn.className = 'enviado';
+          btn.textContent = t.btnEnviado;
+          ['nombre', 'email', 'evento', 'fecha'].forEach(id => document.getElementById(id).value = '');
+        } else {
+          btn.className = 'error-btn';
+          btn.textContent = '❌ ' + (data.error || 'Error');
+        }
+      } catch (e) {
+        btn.className = 'error-btn';
+        btn.textContent = t.errConexion;
+      }
+
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.className = '';
+        btn.textContent = t.btnEnviar;
+      }, 3000);
+    }
+  </script>
+</body>
+</html>
